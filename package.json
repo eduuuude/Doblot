@@ -1,0 +1,28 @@
+{
+  "name": "doblot",
+  "version": "1.0.0",
+  "description": "Proyecto doblot para Despligue de 4º teleco",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eduuuude/Doblot.git"
+  },
+  "keywords": [
+    "Robot",
+    "Double",
+    "Streaming",
+    "Human"
+  ],
+  "author": "Maria Fernandez, Eduardo Sevillano, Daniel Uribe",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eduuuude/Doblot/issues"
+  },
+  "homepage": "https://github.com/eduuuude/Doblot#readme",
+  "dependencies": {
+    "express": "^4.15.2"
+  }
+}
