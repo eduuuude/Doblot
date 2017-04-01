@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <title>Human Terminal</title>
+  </head>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <body class="w3-content" style="max-width:90%">
+    <div class="w3-row">
+      <div class="w3-quarter w3-dark-grey w3-container w3-center w3-padding-64 w3-padding-large" id="doblotList" style="height:700px">
+      <h1>Human verification</h1>
+        <form class="w3-container w3-card-2 w3-padding-32 w3-white" action="/action_page.php" target="_blank">
+          <div class="w3-section"
+            <label>Name</label>
+            <input class="w3-input" style="width:100%;" type="text" required="" name="Name">
+          </div>
+          <div class="w3-section">
+            <label>Email</label>
+            <input class="w3-input" style="width:100%;" type="text" required="" name="Email">
+          </div>
+          <div class="w3-section">
+            <label>Message</label>
+            <input class="w3-input" style="width:100%;" type="text" required="" name="Message">
+          </div>
+          <button type="submit" class="w3-button w3-teal w3-right">Send</button>
+        </form>
+      </div>
+      <div class="w3-threequarter w3-light-grey" id="doblotMessages" style="height:700px">
+        
+      </div>
+    </div>
+    <footer class="w3-container w3-white w3-padding-16">
+      <p>Doblot Proyect. Maria Fernandez, Eduardo Sevillano and Eduardo Sevillano</p>
+    </footer>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var doblotListDiv = document.getElementById('doblotList');
+      var doblotMessages = document.getElementById('doblotMessages');
+
+      var sendNameButton = document.getElementById('nameButton');
+      var humanNameBox = document.getElementById('humanName');
+
+      var releaseButton = document.getElementById('release');
+
+      var humanMessage = document.getElementById('humanMessageBox');
+
+      var testStarter = false;
+
+      var socket = io();
+
+      //Recepcion de lista de doblots disponible
+      socket.on('doblotList', function(data) {
+        //se oculta el boton de release connection
+        releaseButton.style.display = "none";
+        //Cada nombre se introduce en una etiqueta <p></p>, se le asigna un listener que envia el nombre al servidor
+        //y se añade al div de la lista.
+        for (var i=0; i<data.length ; i++) {
+          var doblotListElement = document.createElement("p");
+          doblotListElement.innerHTML = data[i];
+
+          doblotListElement.onclick = function() {
+            socket.emit('doblotSelected', doblotListElement.innerHTML);
+          }
+
+          doblotListDiv.appendChild(doblotListElement);
+        }
+      });
+
+      socket.on('doblotMessage', function(data) {
+        if (data.type == 'connectionTest') {
+          if (testStarter) {
+            //Responder al servidor que OK
+            socket.emit('controlMessage', {
+              type: 'connectionOK',
+              content: ''
+            });
+            testStarter = false;
+          }
+          else {
+            //Responder al doblot con el mismo mensaje
+            socket.emit('humanMessage', {
+              type: 'connectionTest',
+              content: ''
+            });
+          }
+        }
+        else {
+          doblotMessages.innerHTML = doblotMessages.innerHTML + '</br>' + data;
+        }
+      });
+
+      socket.on('controlMessage', function(data) {
+        if (data.type == 'connectionTest') {
+          testStarter = true;
+          socket.emit('humanMessage', {
+            type: 'connectionTest',
+            content: ''
+          });
+        }
+        else if (data.type == 'connectionEstablished') {
+          //comenzar a enviar datos o poner listener para teclas o algo asi.
+          var range = document.createRange();
+          range.selectNodeContents(doblotListDiv);
+          range.deleteContents();
+          releaseButton.style.display = "inline-block";
+        }
+        else {
+          console.log('Server message: ' + data.type + ' | ' + data.content);
+        }
+      });
+
+      socket.on('doblotDisconnected', function(data) {
+        //parar de enviar datos y algun alert para avisar de que se ha desconectado
+      });
+
+
+      /////////////////////////////////////////////////////
+
+      sendNameButton.onclick = function() {
+        socket.emit('humanInfo', {
+          name: humanNameBox.value
+        });
+      };
+
+      releaseButton.onclick = function() {
+        socket.emit('releaseConnection', {});
+      }
+
+      </script>
+  </body>
+</html>

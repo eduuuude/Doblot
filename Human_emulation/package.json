@@ -1,0 +1,16 @@
+{
+  "name": "doblot_project-doblot-side",
+  "version": "1.0.0",
+  "description": "",
+  "main": "doblot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "command-line-args": "^4.0.2",
+    "socket.io": "^1.7.3",
+    "socket.io-client": "^1.7.3"
+  }
+}
