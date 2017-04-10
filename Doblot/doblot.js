@@ -1,6 +1,10 @@
 /*
 Código de un Doblot
 */
+
+
+
+
 //Libreria de prseo de argumentos de linea de comandos
 var commandLineArgs = require('command-line-args');
 
@@ -33,7 +37,7 @@ socket.on('connect', function(){});
   socket.emit('doblotInfo', {
      name: options.name,
      propietary: options.propietary
-   }
+  }
 );
 
 socket.on('event', function(data){});
@@ -52,6 +56,8 @@ socket.on('humanMessage', function(data) {
       });
       testStarter = false;
     }
+    
+    
     else {
       //Responder al humano con el mismo mensaje
       socket.emit('doblotMessage', {
@@ -60,6 +66,10 @@ socket.on('humanMessage', function(data) {
       });
     }
   }
+  //Peticion del humano para iniciar streaming
+  else if (data.type == 'videoStreamRequest') {
+      webcam_server.startBroadcast();
+    }
   else {
     console.log(data.type + ': ' + data.content);
   }
@@ -75,12 +85,14 @@ socket.on('controlMessage', function(data) {
   }
   else if (data.type == 'connectionEstablished') {
     //comenzar a enviar datos o poner listener para teclas o algo asi.
+    /*
     timer = setInterval( function() {
         socket.emit('doblotMessage', {
           type: 'message',
           content: options.name
         });
       },1000);
+    */
   }
   else {
     console.log('Server message: ' + data.type + ' | ' + data.content);
@@ -89,22 +101,15 @@ socket.on('controlMessage', function(data) {
 
 //Notificacion desde el servidor de que el humano se ha desconectado
 socket.on('humanDisconnected', function(data) {
-  //Parar envío de datos
-  clearInterval(timer);
+  console.log("asojdoiasjd");
+  webcam_server.stopBroadcast();
 });
 
 const LiveCam = require('livecam');
+
+
 const webcam_server = new LiveCam
 ({
-    // address and port of the webcam UI
-    'ui_addr' : '127.0.0.1',
-    'ui_port' : 11000,
- 
-    // address and port of the webcam Socket.IO server
-    // this server broadcasts GStreamer's video frames
-    // for consumption in browser side.
-    'broadcast_addr' : '127.0.0.1',
-    'broadcast_port' : 12000,
  
     // address and port of GStreamer's tcp sink
     'gst_tcp_addr' : '127.0.0.1',
@@ -114,12 +119,19 @@ const webcam_server = new LiveCam
     'start' : function() {
         console.log('WebCam server started!');
     },
+
+    'imageEmitCallback' : function(data) {
+      socket.emit('doblotMessage', {
+        type: 'image',
+        content : data
+      });
+    },
     
     // webcam object holds configuration of webcam frames
     'webcam' : {
         
         // should frames be converted to grayscale (default : false)
-        'grayscale' : true,
+        //'grayscale' : true,
         
         // should width of the frame be resized (default : 0)
         // provide 0 to match webcam input
@@ -138,6 +150,10 @@ const webcam_server = new LiveCam
         'framerate' : 25
     }
 });
+
+
+
+
 
 
 

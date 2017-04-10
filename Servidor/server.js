@@ -80,8 +80,10 @@ function deleteBridge (socket) {
       connection.human.socket.emit('doblotMessage', data);
     });
 
+
     connection.doblot.state = 'idle';
     connection.human.state = 'idle';
+
     var index = getConnectionBySocket(activeConnections, socket);
     activeConnections.splice(index,1);
 
@@ -112,12 +114,17 @@ function controlMessageHandler(data, socket) {
 //A partir de aqui, se definen los evento de humano y de doblots y se arrancan los servidores
 
 var ioDoblot = require('socket.io')();
+
 var connectedDoblots = [];
 var activeConnections = [];
 
 ioDoblot.on('connection', function(doblotSocket){
   //Cuando se conecta un doblot, se añade a la array de doblot conectados
   console.log('Doblot connected');
+
+
+
+
   connectedDoblots.push({
       socket: doblotSocket,
       name: '',
@@ -143,7 +150,7 @@ ioDoblot.on('connection', function(doblotSocket){
   doblotSocket.on('releaseConnection', function(data) {
     //Se notifica al humano que el doblot se desconecta
     var connection = getConnectionBySocket(activeConnections, doblotSocket);
-    connection.human.socket.emit('doblotDisconected',{});
+    connection.human.socket.emit('doblotDisconnected',{});
     //deleteBridge solo acepta el socket como parametro de entrada. Busca el socket en activeConnections
     deleteBridge(doblotSocket);
     //Se envia al humano los doblots que tiene disponibles
@@ -156,7 +163,7 @@ ioDoblot.on('connection', function(doblotSocket){
     if ( getStateBySocket(connectedDoblots ,doblotSocket) == 'connectionEstablished') {
       var connection = getConnectionBySocket(activeConnections, doblotSocket);
       //console.log(connection);
-      connection.human.socket.emit('doblotDisconected',{});
+      connection.human.socket.emit('doblotDisconnected',{});
       //deleteBridge solo acepta el socket como parametro de entrada. Busca el socket en activeConnections
       deleteBridge(doblotSocket);
       //connection.human.socket.emit('doblotList', getHumanDoblots(connectedDoblots, connection.human.name));
@@ -222,7 +229,7 @@ ioHuman.on('connection', function(humanSocket){
   humanSocket.on('releaseConnection', function(data) {
     //Se notifica al doblot que el humano se desconecta
     var connection = getConnectionBySocket(activeConnections ,humanSocket);
-    connection.doblot.socket.emit('humanDisconected',{});
+    connection.doblot.socket.emit('humanDisconnected',{});
     //deleteBridge solo acepta el socket como parametro de entrada. Busca el socket en activeConnections
     deleteBridge(humanSocket);
     //Se envia al humano los doblots que tiene disponibles
@@ -234,7 +241,7 @@ ioHuman.on('connection', function(humanSocket){
     //Se notifica al doblot que el humano se desconecta
     if ( getStateBySocket(connectedHumans, humanSocket) == 'connectionEstablished') {
       var connection = getConnectionBySocket(activeConnections, humanSocket);
-      connection.doblot.socket.emit('humanDisconected',{});
+      connection.doblot.socket.emit('humanDisconnected',{});
       //deleteBridge solo acepta el socket como parametro de entrada. Busca el socket en activeConnections
       deleteBridge(humanSocket);
     }
