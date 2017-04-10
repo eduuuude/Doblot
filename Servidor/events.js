@@ -6,22 +6,36 @@ exports.humanConnection = function ( socket ) {
 	connections.addHuman( socket );
 }
 
-exports.humanInfo = function ( socket , data ) {
-	insertHumanInfo( socket , data.content );
+exports.humanDisconnection = function ( socket ) {
+	if (connections.getOneStateBySocket(socket) == CONSTANTS.STATE_CONNECTED) {
+		var bridge = bridges.getBridgeBySocket( socket );
+
+		connections.sendMessage( bridge.doblot.socket , CONSTANTS.CONTROL_MESSAGE , CONSTANTS.CONNECTION_RELEASE, undefined );
+
+		bridge.doblot.state = CONSTANTS.STATE_IDLE;
+
+		bridges.removeBridgeBySocket( socket );
+	}
+
+	connections.removeHuman( socket );
 }
 
-exports.humanReleaseConnection = function (socket) {
-    var connection = getBridgeBySocket( socket );
+exports.doblotConnection = function ( socket ) {
+	connections.addDoblot( socket );
+}
 
-	//Se notifica al doblot que el humano se desconecta
-	connections.sendMessage( connection.doblot.socket , CONSTANTS.CONTROL_MESSAGE , CONSTANTS.CONNECTION_RELEASE, undefined );
+export.doblotDisconnection = function ( socket ) {
+	if (connections.getOneStateBySocket(socket) == CONSTANTS.STATE_CONNECTED) {
+		var bridge = bridges.getBridgeBySocket( socket );
 
-    //se elimina el puente
-    bridges.removeBridgeBySocket( socket );
+		connections.sendMessage( bridge.human.socket , CONSTANTS.CONTROL_MESSAGE , CONSTANTS.CONNECTION_RELEASE, undefined );
 
-    //Se envia al humano los doblots que tiene disponibles
-    var human = connections.getOneBySocket(connectedHumans , humanSocket);
-    humanSocket.emit('doblotList', getHumanDoblots(connectedDoblots, human.name));
+		bridge.doblot.state = CONSTANTS.STATE_IDLE;
+
+		bridges.removeBridgeBySocket( socket );
+	}
+
+	connections.removeDoblot( socket );
 }
 
 //Funcion para el puente
@@ -55,13 +69,13 @@ function controlMessageHandler(socket, data) {
 			break;
 		}
 		case(CONSTANTS.CONNECTION_TEST_OK): {
-			var connection = getConnectionBySocket(activeConnections, socket);
+			var bridge = getConnectionBySocket(activeConnections, socket);
 
-			connection.human.state = CONSTANTS.STATE_CONNECTED;
-    		connection.doblot.state = CONSTANTS.STATE_CONNECTED;
+			bridge.human.state = CONSTANTS.STATE_CONNECTED;
+    		bridge.doblot.state = CONSTANTS.STATE_CONNECTED;
 
-    		connections.sendMessage( connection.human.socket , CONSTANTS.CONTROL_MESSAGE , CONSTANTS.CONNECTION_ESTABLISHED, undefined );
-    		connections.sendMessage( connection.doblot.socket , CONSTANTS.CONTROL_MESSAGE , CONSTANTS.CONNECTION_ESTABLISHED, undefined );
+    		connections.sendMessage( bridge.human.socket , CONSTANTS.CONTROL_MESSAGE , CONSTANTS.CONNECTION_ESTABLISHED, undefined );
+    		connections.sendMessage( bridge.doblot.socket , CONSTANTS.CONTROL_MESSAGE , CONSTANTS.CONNECTION_ESTABLISHED, undefined );
 
 			break;
 		}
