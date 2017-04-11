@@ -1,5 +1,6 @@
-const CONSTANTS = require('./constants');
+const CONSTANTS = require('./public/constants');
 const events = require('./events');
+
 var activeBridges = [];
 
 exports.getIndexBridgeBySocket = function ( socket ) {	

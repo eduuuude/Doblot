@@ -1,5 +1,5 @@
+const CONSTANTS = require('./public/constants');
 const connections = require('./connections');
-const CONSTANTS = require('./constants');
 const bridges = require('./bridges');
 
 exports.humanConnection = function ( socket ) {
@@ -24,7 +24,7 @@ exports.doblotConnection = function ( socket ) {
 	connections.addDoblot( socket );
 }
 
-export.doblotDisconnection = function ( socket ) {
+exports.doblotDisconnection = function ( socket ) {
 	if (connections.getOneStateBySocket(socket) == CONSTANTS.STATE_CONNECTED) {
 		var bridge = bridges.getBridgeBySocket( socket );
 
@@ -43,7 +43,7 @@ exports.echo = function (socket, messageType ,data) {
 	socket.emit(messageType, data);
 }
 
-function controlMessageHandler(socket, data) {
+exports.controlMessageHandler = function (socket, data) {
 	switch (data.type) {
 		case(CONSTANTS.HUMAN_INFO): {
 			insertHumanInfo(socket, data.content.name);

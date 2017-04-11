@@ -19,16 +19,19 @@ ioDoblot.on('connection', function(doblotSocket){
 });
 ioDoblot.listen(2000);
 
-
-var appServerHuman = require('express')();
+var express = require('express');
+var appServerHuman = express();
 var httpServerHuman = require('http').Server(appServerHuman);
 
 var ioHuman = require('socket.io')(httpServerHuman);
 
+appServerHuman.use(express.static('public'));
+
+/*
 appServerHuman.get('/', function(req, res){
 	res.sendfile('index.html');
 });
-
+*/
 ioHuman.on('connection', function( humanSocket ){
 	console.log('Human connected');
 	events.humanConnection( humanSocket );
@@ -43,5 +46,5 @@ ioHuman.on('connection', function( humanSocket ){
 	});
 });
 
-httpServerHuman.listen(3000, function(){
-console.log('listening on *:3000');
+httpServerHuman.listen(3000, function() { console.log('Human server running')});
+

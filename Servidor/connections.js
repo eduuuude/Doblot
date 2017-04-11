@@ -1,4 +1,4 @@
-const CONSTANTS = require('./constants');
+const CONSTANTS = require('./public/constants');
 
 var connectedEntities = [];
 //var connectedDoblots = [];
