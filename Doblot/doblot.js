@@ -2,10 +2,7 @@
 Código de un Doblot
 */
 
-
-
-
-//Libreria de prseo de argumentos de linea de comandos
+//Libreria de parseo de argumentos de linea de comandos
 var commandLineArgs = require('command-line-args');
 
 var optionDefinitions = [
@@ -15,7 +12,6 @@ var optionDefinitions = [
 
 var options = commandLineArgs(optionDefinitions);
 
-var timer;
 
 console.log('Starting doblot. Name: ' + options.name + ' Propietary: ' + options.propietary);
 
@@ -27,85 +23,89 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
+var sendMessage = function (socket, messageType, messageContentType, messageContent) {
+	socket.emit(messageType, {
+		type: messageContentType,
+		content: messageContent
+	});
+}
+
 //Conexión con el servidor
 var socket = require('socket.io-client')('http://localhost:2000');
 
 var testStarter = false;
 
+var CONSTANTS;
+
 //Subscricion de eventos
-socket.on('connect', function(){});
-  socket.emit('doblotInfo', {
-     name: options.name,
-     propietary: options.propietary
-  }
-);
-
-socket.on('event', function(data){});
-
-socket.on('disconnect', function(){});
-
-//Este evento debería darse cuando la conexión esta estableciendose o establecida. Son mensajes del humano
-socket.on('humanMessage', function(data) {
-  //Si el mensaje recibido es para testear la conexión
-  if (data.type == 'connectionTest') {
-    if (testStarter) {
-      //Responder al servidor que OK
-      socket.emit('controlMessage', {
-        type: 'connectionOK',
-        content: ''
-      });
-      testStarter = false;
-    }
+socket.on('connect', function(){
     
-    
-    else {
-      //Responder al humano con el mismo mensaje
-      socket.emit('doblotMessage', {
-        type: 'connectionTest',
-        content: ''
-      });
-    }
-  }
-  //Peticion del humano para iniciar streaming
-  else if (data.type == 'videoStreamRequest') {
-      webcam_server.startBroadcast();
-    }
-  else {
-    console.log(data.type + ': ' + data.content);
-  }
+  
 });
 
-socket.on('controlMessage', function(data) {
-  if (data.type == 'connectionTest') {
-    testStarter = true;
-    socket.emit('doblotMessage', {
-      type: 'connectionTest',
-      content: ''
-    });
-  }
-  else if (data.type == 'connectionEstablished') {
-    //comenzar a enviar datos o poner listener para teclas o algo asi.
-    /*
-    timer = setInterval( function() {
-        socket.emit('doblotMessage', {
-          type: 'message',
-          content: options.name
-        });
-      },1000);
-    */
-  }
-  else {
-    console.log('Server message: ' + data.type + ' | ' + data.content);
-  }
+socket.on('CONSTANTS', function ( data ) {
+	CONSTANTS = data.content;
+
+	sendMessage(socket, CONSTANTS.CONTROL_MESSAGE, CONSTANTS.DOBLOT_INFO, {
+		name: options.name,
+		propietary: options.propietary
+	});
+
+	socket.on(CONSTANTS.HUMAN_MESSAGE, function(data) {
+		switch ( data.type ) {
+			case ( CONSTANTS.CONNECTION_TEST_REQUEST ): {
+				if (testStarter) {
+					//Responder al servidor que el test es correcto
+					sendMessage( socket , CONSTANTS.CONTROL_MESSAGE, CONSTANTS.CONNECTION_TEST_OK, undefined);
+					testStarter = false;
+				}
+				else {
+					//Responder al doblot con el mismo mensaje
+					sendMessage ( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.CONNECTION_TEST_REQUEST , undefined);
+				}
+
+				break;
+			}
+			case ( CONSTANTS.VIDEO_STREAM_REQUEST ): {
+				webcam_server.startBroadcast();
+
+				break;
+			}
+
+			case ( CONSTANTS.TEXT ): {
+				doblotMessagesDiv.innerHTML = doblotMessagesDiv.innerHTML + '</br>' + data;
+
+				break;
+			}
+		}
+	});
+
+	socket.on(CONSTANTS.CONTROL_MESSAGE, function(data) {
+		switch (data.type) {
+			case ( CONSTANTS.CONNECTION_TEST_REQUEST ): {
+				//Responder al doblot con el mismo mensaje
+				sendMessage ( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.CONNECTION_TEST_REQUEST , undefined);
+				testStarter = true;
+
+				break;
+			}
+			case(CONSTANTS.CONNECTION_ESTABLISHED): {
+				
+
+				break;
+			}
+			case(CONSTANTS.CONNECTION_RELEASE): {
+				webcam_server.stopBroadcast();
+
+				break;
+			}		
+		}
+	});
 });
 
-//Notificacion desde el servidor de que el humano se ha desconectado
-socket.on('humanDisconnected', function(data) {
-  console.log("asojdoiasjd");
-  webcam_server.stopBroadcast();
-});
 
-const LiveCam = require('livecam');
+
+const LiveCam = require('./livecam_mod');
 
 
 const webcam_server = new LiveCam
@@ -121,10 +121,7 @@ const webcam_server = new LiveCam
     },
 
     'imageEmitCallback' : function(data) {
-      socket.emit('doblotMessage', {
-        type: 'image',
-        content : data
-      });
+      sendMessage(socket, CONSTANTS.DOBLOT_MESSAGE, CONSTANTS.IMAGE, data);
     },
     
     // webcam object holds configuration of webcam frames
