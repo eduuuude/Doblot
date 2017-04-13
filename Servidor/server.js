@@ -1,4 +1,5 @@
 const events = require('./events');
+const CONSTANTS = require('./public/constants.json');
 
 var ioDoblot = require('socket.io')();
 
@@ -9,7 +10,7 @@ ioDoblot.on('connection', function(doblotSocket){
 	events.doblotConnection( doblotSocket )
 
 	//El controlMessageHandler es comun para humano y doblot
-	doblotSocket.on('controlMessage', function(data) {
+	doblotSocket.on(CONSTANTS.CONTROL_MESSAGE, function(data) {
 		events.controlMessageHandler( doblotSocket , data );
 	});
 
@@ -33,16 +34,15 @@ appServerHuman.get('/', function(req, res){
 });
 */
 ioHuman.on('connection', function( humanSocket ){
-	console.log('Human connected');
 	events.humanConnection( humanSocket );
 
 	//El controlMessageHandler es comun para humano y doblot
-	humanSocket.on('controlMessage', function(data) {
+	humanSocket.on( CONSTANTS.CONTROL_MESSAGE , function(data) {
 		events.controlMessageHandler( humanSocket, data );
 	});
 
 	humanSocket.on('disconnect', function () {
-	events.humanDisconnection( humanSocket );
+		events.humanDisconnection( humanSocket );
 	});
 });
 

@@ -1,9 +1,10 @@
-const CONSTANTS = require('./public/constants');
+const CONSTANTS = require('./public/constants.json');
 const connections = require('./connections');
 const bridges = require('./bridges');
 
 exports.humanConnection = function ( socket ) {
 	connections.addHuman( socket );
+	connections.sendMessage(socket , 'CONSTANTS' , '' , CONSTANTS);
 }
 
 exports.humanDisconnection = function ( socket ) {
@@ -22,20 +23,27 @@ exports.humanDisconnection = function ( socket ) {
 
 exports.doblotConnection = function ( socket ) {
 	connections.addDoblot( socket );
+	connections.sendMessage(socket , 'CONSTANTS' , '' , CONSTANTS);
 }
 
 exports.doblotDisconnection = function ( socket ) {
 	if (connections.getOneStateBySocket(socket) == CONSTANTS.STATE_CONNECTED) {
+		connections.removeDoblot( socket );
+
 		var bridge = bridges.getBridgeBySocket( socket );
 
 		connections.sendMessage( bridge.human.socket , CONSTANTS.CONTROL_MESSAGE , CONSTANTS.CONNECTION_RELEASE, undefined );
+		connections.sendMessage( bridge.human.socket , CONSTANTS.CONTROL_MESSAGE, CONSTANTS.DOBLOT_LIST, connections.getHumanDoblots( bridge.human.name ));
 
-		bridge.doblot.state = CONSTANTS.STATE_IDLE;
+		bridge.human.state = CONSTANTS.STATE_IDLE;
 
 		bridges.removeBridgeBySocket( socket );
 	}
+	else {
+		connections.removeDoblot( socket );
+	}
 
-	connections.removeDoblot( socket );
+	
 }
 
 //Funcion para el puente
@@ -44,14 +52,23 @@ exports.echo = function (socket, messageType ,data) {
 }
 
 exports.controlMessageHandler = function (socket, data) {
+	console.log('Control message: ' + data.type + ' | ' + data.content);
 	switch (data.type) {
 		case(CONSTANTS.HUMAN_INFO): {
-			insertHumanInfo(socket, data.content.name);
+			connections.insertHumanInfo(socket, data.content.name);
+			//console.log(connections.getHumanDoblots(data.content.name));
+			connections.sendMessage(socket, CONSTANTS.CONTROL_MESSAGE, CONSTANTS.DOBLOT_LIST, connections.getHumanDoblots(data.content.name));
 
 			break;
 		}
 		case(CONSTANTS.DOBLOT_INFO): {
-			insertDoblotInfo(socket, data.content.name, data.content.propietary);
+			connections.insertDoblotInfo(socket, data.content.name, data.content.propietary);
+
+			let human = connections.getOneByName( data.content.propietary );
+
+			if (human != undefined && human.state != CONSTANTS.STATE_CONNECTED) {
+				connections.sendMessage(human.socket, CONSTANTS.CONTROL_MESSAGE, CONSTANTS.DOBLOT_LIST, connections.getHumanDoblots(human.name));
+			}
 
 			break;
 		}
@@ -69,7 +86,7 @@ exports.controlMessageHandler = function (socket, data) {
 			break;
 		}
 		case(CONSTANTS.CONNECTION_TEST_OK): {
-			var bridge = getConnectionBySocket(activeConnections, socket);
+			var bridge = bridges.getBridgeBySocket( socket );
 
 			bridge.human.state = CONSTANTS.STATE_CONNECTED;
     		bridge.doblot.state = CONSTANTS.STATE_CONNECTED;
@@ -80,13 +97,15 @@ exports.controlMessageHandler = function (socket, data) {
 			break;
 		}
 		case(CONSTANTS.CONNECTION_RELEASE_REQUEST): {
-			var connection = getBridgeBySocket( socket );
+			var bridge = bridges.getBridgeBySocket( socket );
 
-			connections.sendMessage( connection.human.socket , CONSTANTS.CONTROL_MESSAGE , CONSTANTS.CONNECTION_RELEASE, undefined );
-			connections.sendMessage( connection.doblot.socket , CONSTANTS.CONTROL_MESSAGE , CONSTANTS.CONNECTION_RELEASE, undefined );
+			connections.sendMessage( bridge.human.socket , CONSTANTS.CONTROL_MESSAGE , CONSTANTS.CONNECTION_RELEASE, undefined );
+			connections.sendMessage( bridge.doblot.socket , CONSTANTS.CONTROL_MESSAGE , CONSTANTS.CONNECTION_RELEASE, undefined );
 
-			connection.human.state = CONSTANTS.STATE_IDLE;
-			connection.doblot.state = CONSTANTS.STATE_IDLE;
+			connections.sendMessage( bridge.human.socket , CONSTANTS.CONTROL_MESSAGE, CONSTANTS.DOBLOT_LIST, connections.getHumanDoblots( bridge.human.name ));
+
+			bridge.human.state = CONSTANTS.STATE_IDLE;
+			bridge.doblot.state = CONSTANTS.STATE_IDLE;
 
 			bridges.removeBridgeBySocket( socket );
 

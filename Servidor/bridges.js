@@ -1,18 +1,26 @@
-const CONSTANTS = require('./public/constants');
+const CONSTANTS = require('./public/constants.json');
 const events = require('./events');
 
 var activeBridges = [];
 
-exports.getIndexBridgeBySocket = function ( socket ) {	
+function getIndexBridgeBySocket ( socket ) {	
 	for (var i = 0; i < activeBridges.length ; i++) {
 		if (activeBridges[i].human.socket == socket || activeBridges[i].doblot.socket == socket )
 			return i;
 	}
 }
 
-exports.getBridgeBySocket = function ( socket ) {
+exports.getIndexBridgeBySocket = function ( socket ) { 
+	return getIndexBridgeBySocket( socket );
+}
+
+function getBridgeBySocket ( socket ) {
 	var index = getIndexBridgeBySocket( socket );
 	return activeBridges[index];
+}
+
+exports.getBridgeBySocket = function ( socket ) {
+	return getBridgeBySocket( socket );
 }
 
 exports.createBridge = function ( human , doblot ) {
@@ -30,8 +38,14 @@ exports.createBridge = function ( human , doblot ) {
 	});
 }
 
-exports.removeBridgeByIndex = function ( index ) {
+
+
+function removeBridgeByIndex ( index ) {
 	activeBridges.splice(index,1);
+}
+
+exports.removeBridgeByIndex = function ( index ) {
+	removeBridgeByIndex ( index );
 }
 
 exports.removeBridgeBySocket = function ( socket ) {

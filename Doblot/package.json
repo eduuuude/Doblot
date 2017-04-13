@@ -12,6 +12,7 @@
     "command-line-args": "^4.0.2",
     "livecam": "^0.2.0",
     "socket.io": "^1.7.3",
-    "socket.io-client": "^1.7.3"
+    "socket.io-client": "^1.7.3",
+    "dicer": "^0.2.5"
   }
 }

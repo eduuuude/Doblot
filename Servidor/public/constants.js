@@ -1,4 +1,4 @@
-module.exports = {
+const CONSTANTS = {
 	//Tipos de mensaje
 	CONTROL_MESSAGE: 'controlMessage',
 	HUMAN_MESSAGE: 'humanMessage',
@@ -10,6 +10,11 @@ module.exports = {
 	STATE_TESTING_CONNECTION: 2,
 	STATE_CONNECTED: 3,
 
+	//Tipo de contenidos de mensaje
+	IMAGE: 0,
+	TEXT: 1,
+	VIDEOSTREAM_REQUEST: 2,
+
 	//Subtipo para mensajes de control
 	CONNECTION_RELEASE_REQUEST: 0,
 	DOBLOT_SELECTED: 1,
@@ -18,7 +23,8 @@ module.exports = {
 	HUMAN_INFO: 4,
 	DOBLOT_INFO: 5,
 	DOBLOT_LIST: 6,
-	CONNECTION_ESTABLISHED: 7
+	CONNECTION_ESTABLISHED: 7,
+	CONNECTION_RELEASE: 8
 
 }
 

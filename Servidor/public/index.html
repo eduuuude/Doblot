@@ -13,16 +13,18 @@
             <input id="humanNameBox" class="w3-input" style="width:100%;" type="text" required="" name="Name">
             <button id="sendNameButton" type="button" class="w3-button w3-teal w3-right">Send</button>
           </div>
-          <div id="doblotList" class="w3-section" style="display: none">
+          <div id="doblotListPanel" class="w3-section" style="display: none">
             <h1>Doblot List</h1>
+            <div id="doblotList">
+            </div>
           </div>
           <div id="doblotMessages" class="w3-section" style="display: none">
             <h1>Doblot messages</h1>
-            <button id="releaseButton" type="button" class="w3-button w3-teal w3-right">Release connection</button>
+            <button id="releaseButton" type="button" class="w3-button w3-teal" >Release connection</button>
           </div>
       </div>
       <div id="videoDiv" class="w3-threequarter w3-light-grey"  style="height:700px">
-        <div class="feed"><img id="video" src="" style="width: 100%; height: 700px"></div>
+        <img id="video" src="" style="width: 100%; height: 700px">
       </div>
     </div>
     <footer class="w3-container w3-white w3-padding-16">
@@ -30,7 +32,6 @@
     </footer>
     
     <script src="/socket.io/socket.io.js"></script>
-    <script src="CONSTANTS.js"> </script>
     <script src="human.js"> </script>
   </body>
 </html>
