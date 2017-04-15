@@ -2,13 +2,13 @@ const mongoose = require('mongoose');
 const crypto = require('crypto');
 const Schema = mongoose.Schema;
 
-const HumanSchema = new Schema({
+const UserSchema = new Schema({
 	username: String,
 	password: String,
 	salt: String
 })
 
-HumanSchema.pre('save', function(next) {
+UserSchema.pre('save', function(next) {
 	if(this.password) {
 		this.salt = new Buffer(crypto.randomBytes(16).toString('base64'), 'base64');
 		this.password = this.hashPassword( this.password );
@@ -16,15 +16,15 @@ HumanSchema.pre('save', function(next) {
 	next();
 });
 
-HumanSchema.methods.hashPassword = function (password) {
+UserSchema.methods.hashPassword = function (password) {
 	return crypto.pbkdf2Sync(password, this.salt, 10000, 64).toString('base64');
 }
 
-HumanSchema.methods.authenticate = function(password) {
+UserSchema.methods.authenticate = function(password) {
 	return this.password === this.hashPassword(password);
 }
 
-HumanSchema.statics.findUniqueUsername = function(username, suffix, callback) {
+UserSchema.statics.findUniqueUsername = function(username, suffix, callback) {
 	var possibleUsername = username + (suffix || '');
 	this.findOne({
 		username: possibleUsername
@@ -43,4 +43,4 @@ HumanSchema.statics.findUniqueUsername = function(username, suffix, callback) {
 	});
 };
 
-mongoose.model('Human', HumanSchema);
+mongoose.model('User', UserSchema);

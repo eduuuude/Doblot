@@ -14,9 +14,7 @@ module.exports = function() {
 	}));
 
 	
-	require('../app/routes/human.routes')(app);
-
-	app.use(express.static('./public'));
+	require('../app/routes/doblot.routes')(app);
 
 	return app;
 }

@@ -3,7 +3,16 @@ Código de un Doblot
 */
 
 //Libreria de parseo de argumentos de linea de comandos
-var commandLineArgs = require('command-line-args');
+const commandLineArgs = require('command-line-args');
+const request = require('request');
+const socket = require('socket.io-client')('http://localhost:2000/');
+
+var sendMessage = function (socket, messageType, messageContentType, messageContent) {
+	socket.emit(messageType, {
+		type: messageContentType,
+		content: messageContent
+	});
+}
 
 var optionDefinitions = [
   { name: 'propietary', alias: 'p', type: String },
@@ -16,40 +25,44 @@ var options = commandLineArgs(optionDefinitions);
 console.log('Starting doblot. Name: ' + options.name + ' Propietary: ' + options.propietary);
 
 
-//Funcion de numeros random, actualmente utilizada para generar nombres de doblots diferentes.
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min;
-}
-
-var sendMessage = function (socket, messageType, messageContentType, messageContent) {
-	socket.emit(messageType, {
-		type: messageContentType,
-		content: messageContent
-	});
-}
-
 //Conexión con el servidor
-var socket = require('socket.io-client')('http://localhost:2000');
 
 var testStarter = false;
 
 var CONSTANTS;
 
-//Subscricion de eventos
-socket.on('connect', function(){
-    
-  
-});
+
+var headers = {
+    'User-Agent':       'Super Agent/0.0.1',
+    'Content-Type':     'application/json'
+}
+
+
 
 socket.on('CONSTANTS', function ( data ) {
 	CONSTANTS = data.content;
+	console.log('Constants received');
 
+	/*
 	sendMessage(socket, CONSTANTS.CONTROL_MESSAGE, CONSTANTS.DOBLOT_INFO, {
 		name: options.name,
 		propietary: options.propietary
 	});
+	*/
+
+	var httpOptions = {
+    url: 'http://localhost:2000/signin',
+    method: 'POST',
+    headers: headers,
+    form: {'username': options.name, 'password': 'password', 'socketId': socket.id }
+};
+
+	request(httpOptions, function (error, response, body) {
+	    if (!error && response.statusCode == 200) {
+	        // Print out the response body
+	        console.log(body)
+	    }
+	})
 
 	socket.on(CONSTANTS.HUMAN_MESSAGE, function(data) {
 		switch ( data.type ) {
@@ -82,6 +95,14 @@ socket.on('CONSTANTS', function ( data ) {
 
 	socket.on(CONSTANTS.CONTROL_MESSAGE, function(data) {
 		switch (data.type) {
+			case ( CONSTANTS.INFO_REQUEST): {
+				sendMessage(socket, CONSTANTS.CONTROL_MESSAGE, CONSTANTS.DOBLOT_INFO, {
+					name: options.name,
+					propietary: options.propietary
+				});
+
+				break;
+			}
 			case ( CONSTANTS.CONNECTION_TEST_REQUEST ): {
 				//Responder al doblot con el mismo mensaje
 				sendMessage ( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.CONNECTION_TEST_REQUEST , undefined);
@@ -98,7 +119,7 @@ socket.on('CONSTANTS', function ( data ) {
 				webcam_server.stopBroadcast();
 
 				break;
-			}		
+			}
 		}
 	});
 });

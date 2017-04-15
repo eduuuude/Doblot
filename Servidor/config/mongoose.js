@@ -5,6 +5,6 @@ module.exports = function() {
 	mongoose.Promise = require('bluebird');
 	const db = mongoose.connect(config.db);
 
-	require('../app/models/human.model');
+	require('../app/models/user.model');
 	return db;
 }

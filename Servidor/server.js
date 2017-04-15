@@ -3,15 +3,27 @@ const CONSTANTS = require('./public/constants.json');
 
 
 
-var httpServerDoblot = require('http').createServer();
+const configureMongoose = require('./config/mongoose');
+const db = configureMongoose();
+
+
+
+const configurePassport = require('./config/passport');
+
+const configureDoblotExpress = require('./config/doblot.express');
+const configureHumanExpress = require('./config/human.express');
+
+const appServerHuman = configureHumanExpress();
+const appServerDoblot = configureDoblotExpress();
+
+const passport = configurePassport();
+
+var httpServerDoblot = require('http').Server(appServerDoblot);
 var ioDoblot = require('socket.io')(httpServerDoblot);
 
 
 
 ioDoblot.on('connection', function(doblotSocket){
-	//Cuando se conecta un doblot, se añade a la array de doblot conectados
-	console.log('Doblot connected');
-
 	events.doblotConnection( doblotSocket );
 
 	//El controlMessageHandler es comun para humano y doblot
@@ -23,18 +35,11 @@ ioDoblot.on('connection', function(doblotSocket){
 		events.doblotDisconnection( doblotSocket );
 	});
 });
-httpServerDoblot.listen(2000);
 
 
-const configureHumanMongoose = require('./config/human.mongoose');
-const configureHumanPassport = require('./config/human.passport');
-const configureHumanExpress = require('./config/human.express');
 
-const db = configureHumanMongoose();
-const appServerHuman = configureHumanExpress();
-const passport = configureHumanPassport();
 
-var httpServerHuman = require('http').Server(appServerHuman);
+const httpServerHuman = require('http').Server(appServerHuman);
 
 var ioHuman = require('socket.io')(httpServerHuman);
 
@@ -56,5 +61,7 @@ ioHuman.on('connection', function( humanSocket ){
 	});
 });
 
+
+httpServerDoblot.listen(2000, function() { console.log('Doblot server running')});
 httpServerHuman.listen(3000, function() { console.log('Human server running')});
 
