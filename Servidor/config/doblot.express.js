@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 module.exports = function() {
 	const app = express();
 
+	
 	app.use(passport.initialize());
 	//app.use(passport.session());
 
@@ -12,6 +13,11 @@ module.exports = function() {
 	app.use(bodyParser.urlencoded({
 		extended: true
 	}));
+
+
+	app.use(function(req,res) {
+	//console.log(req);
+	});
 
 	
 	require('../app/routes/doblot.routes')(app);

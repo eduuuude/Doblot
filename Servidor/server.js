@@ -23,6 +23,8 @@ var ioDoblot = require('socket.io')(httpServerDoblot);
 
 
 
+
+
 ioDoblot.on('connection', function(doblotSocket){
 	events.doblotConnection( doblotSocket );
 

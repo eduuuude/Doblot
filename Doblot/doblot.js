@@ -103,6 +103,11 @@ socket.on('CONSTANTS', function ( data ) {
 
 				break;
 			}
+			case ( CONSTANTS.ALERT): {
+				console.log(data.content);
+
+				break;
+			}
 			case ( CONSTANTS.CONNECTION_TEST_REQUEST ): {
 				//Responder al doblot con el mismo mensaje
 				sendMessage ( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.CONNECTION_TEST_REQUEST , undefined);

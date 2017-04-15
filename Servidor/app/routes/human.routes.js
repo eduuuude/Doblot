@@ -9,8 +9,21 @@ module.exports = function(app) {
 	//pasarlo a un servidor de administracion
 	app.route('/human').post(user.create).get(user.list);
 
-	app.route('/signin').post(passport.authenticate('local'), function (req, res) {
-		connections.authenticateEntity( req.body.socketId );
-		console.log("Socket " + req.body.socketId + " autenticado.");
-	})
+	app.post('/signin', function(req, res, next) {
+	  passport.authenticate('local', function(err, user, info) {
+	    if (err) { return next(err); }
+	    if (!user) { 
+	    	connections.sendAlert(req.body.socketId,"Incorrect username or password, please try again"); 
+	    	return 
+	    }
+	    req.logIn(user, function(err) {
+	      if (err) {
+	      	return next(err); 
+	      }
+	      console.log("Socket " + req.body.socketId + " authenticated.");
+	      connections.authenticateEntity( req.body.socketId );
+	      return ;
+	    });
+	  })(req, res, next);
+	});
 }

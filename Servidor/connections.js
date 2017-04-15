@@ -129,6 +129,11 @@ exports.getHumanDoblots = function ( value ) {
   return resultArray; 
 }
 
+exports.sendAlert = function ( socketId, message) {
+	var entity = getOneBySocketId(socketId);
+	sendMessage(entity.socket, CONSTANTS.CONTROL_MESSAGE, CONSTANTS.ALERT, message);
+}
+
 exports.authenticateEntity = function ( socketId ) {
 	var entity = getOneBySocketId( socketId );
 	if (!entity.auth) {
