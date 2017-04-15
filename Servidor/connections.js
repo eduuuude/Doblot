@@ -15,6 +15,17 @@ function getOneBySocket ( socket ) {
   return connectedEntities[index];
 }
 
+function getIndexBySocketId( socketId ) {
+  for (var i=0, iLen=connectedEntities.length; i<iLen; i++) {
+    if (connectedEntities[i].socket.id == socketId) return i;
+  }
+}
+
+function getOneBySocketId ( socketId ) {
+  var index = getIndexBySocketId( socketId );
+  return connectedEntities[index];
+}
+
 function getOneByName ( name ) {
   for (var i=0, iLen=connectedEntities.length; i<iLen; i++) {
     if (connectedEntities[i].name == name) return connectedEntities[i];
@@ -41,6 +52,7 @@ exports.getOneByName = function (name) {
 exports.addDoblot = function ( socket ) {
 	connectedEntities.push({
 		socket: socket,
+		auth: false,
 		name: '',
 		propietary: '',
 		state: CONSTANTS.STATE_WAITING_INFO
@@ -66,6 +78,7 @@ exports.removeDoblot = function ( socket ) {
 exports.addHuman = function ( socket ) {
 	connectedEntities.push( {
 		socket: socket,
+		auth: false,
 		name: '',
 		state: CONSTANTS.STATE_WAITING_INFO
 	});
@@ -86,11 +99,15 @@ exports.removeHuman = function ( socket ) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-exports.sendMessage = function (socket, messageType, messageContentType, messageContent) {
+function sendMessage (socket, messageType, messageContentType, messageContent) {
 	socket.emit(messageType, {
 		type: messageContentType,
 		content: messageContent
 	});
+}
+
+exports.sendMessage = function (socket, messageType, messageContentType, messageContent) {
+	sendMessage(socket, messageType, messageContentType, messageContent);
 }
 
 exports.changeState = function (socket, state) {
@@ -110,4 +127,16 @@ exports.getHumanDoblots = function ( value ) {
     } 
   } 
   return resultArray; 
-} 
+}
+
+exports.authenticateEntity = function ( socketId ) {
+	var entity = getOneBySocketId( socketId );
+	if (!entity.auth) {
+		sendMessage(entity.socket, CONSTANTS.CONTROL_MESSAGE, CONSTANTS.INFO_REQUEST, undefined);
+		entity.auth = true;
+	}
+}
+	
+exports.checkAuth = function ( socket ) {
+	return getOneBySocket( socket ).auth;
+}

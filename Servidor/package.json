@@ -24,6 +24,10 @@
   "homepage": "https://github.com/eduuuude/Doblot#readme",
   "dependencies": {
     "express": "^4.15.2",
-    "socket.io": "^1.7.3"
+    "mongoose": "^4.9.4",
+    "passport": "0.3.2",
+    "passport-local": "1.0.0",
+    "socket.io": "^1.7.3",
+    "body-parser": "1.15.2"
   }
 }
