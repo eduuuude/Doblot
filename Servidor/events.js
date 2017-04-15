@@ -40,7 +40,14 @@ exports.doblotDisconnection = function ( socket ) {
 		bridges.removeBridgeBySocket( socket );
 	}
 	else {
+		var propietaryName = connections.getOneBySocket(socket).propietary;
+		var propietary = connections.getOneByName(propietaryName);
+
 		connections.removeDoblot( socket );
+
+		if (propietary) {
+			connections.sendMessage( propietary.socket , CONSTANTS.CONTROL_MESSAGE, CONSTANTS.DOBLOT_LIST, connections.getHumanDoblots( propietary.name ));
+		}
 	}
 
 	

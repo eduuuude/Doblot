@@ -13,12 +13,6 @@ module.exports = function() {
 	app.use(bodyParser.urlencoded({
 		extended: true
 	}));
-
-
-	app.use(function(req,res) {
-	//console.log(req);
-	});
-
 	
 	require('../app/routes/doblot.routes')(app);
 

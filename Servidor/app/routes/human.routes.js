@@ -11,8 +11,10 @@ module.exports = function(app) {
 
 	app.post('/signin', function(req, res, next) {
 	  passport.authenticate('local', function(err, user, info) {
-	    if (err) { return next(err); }
+	    if (err) { return next(err); 
+	    	console.log("faaaail")}
 	    if (!user) { 
+	    	console.log("faaaaaaaaaail")
 	    	connections.sendAlert(req.body.socketId,"Incorrect username or password, please try again"); 
 	    	return 
 	    }
