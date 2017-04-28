@@ -51,7 +51,7 @@ socket.on('CONSTANTS', function ( data ) {
 	*/
 
 	var httpOptions = {
-    url: 'http://localhost:2000/signin',
+    url: 'http://192.168.0.70:2000/signin',
     method: 'POST',
     headers: headers,
     form: {'username': options.name, 'password': 'password', 'socketId': socket.id }
