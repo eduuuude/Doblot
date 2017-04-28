@@ -5,7 +5,7 @@ Código de un Doblot
 //Libreria de parseo de argumentos de linea de comandos
 const commandLineArgs = require('command-line-args');
 const request = require('request');
-const socket = require('socket.io-client')('http://localhost:2000/');
+const socket = require('socket.io-client')('http://192.168.0.70:2000/');
 
 var sendMessage = function (socket, messageType, messageContentType, messageContent) {
 	socket.emit(messageType, {
