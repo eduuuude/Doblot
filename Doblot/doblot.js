@@ -1,8 +1,18 @@
 /*
 Código de un Doblot
 */
-//Libreria de prseo de argumentos de linea de comandos
-var commandLineArgs = require('command-line-args');
+
+//Libreria de parseo de argumentos de linea de comandos
+const commandLineArgs = require('command-line-args');
+const request = require('request');
+const socket = require('socket.io-client')('http://192.168.0.70:2000/');
+
+var sendMessage = function (socket, messageType, messageContentType, messageContent) {
+	socket.emit(messageType, {
+		type: messageContentType,
+		content: messageContent
+	});
+}
 
 var optionDefinitions = [
   { name: 'propietary', alias: 'p', type: String },
@@ -11,100 +21,121 @@ var optionDefinitions = [
 
 var options = commandLineArgs(optionDefinitions);
 
-var timer;
 
 console.log('Starting doblot. Name: ' + options.name + ' Propietary: ' + options.propietary);
 
 
-//Funcion de numeros random, actualmente utilizada para generar nombres de doblots diferentes.
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min;
-}
-
 //Conexión con el servidor
-var socket = require('socket.io-client')('http://localhost:2000');
 
 var testStarter = false;
 
-//Subscricion de eventos
-socket.on('connect', function(){});
-  socket.emit('doblotInfo', {
-     name: options.name,
-     propietary: options.propietary
-   }
-);
+var CONSTANTS;
 
-socket.on('event', function(data){});
 
-socket.on('disconnect', function(){});
+var headers = {
+    'User-Agent':       'Super Agent/0.0.1',
+    'Content-Type':     'application/json'
+}
 
-//Este evento debería darse cuando la conexión esta estableciendose o establecida. Son mensajes del humano
-socket.on('humanMessage', function(data) {
-  //Si el mensaje recibido es para testear la conexión
-  if (data.type == 'connectionTest') {
-    if (testStarter) {
-      //Responder al servidor que OK
-      socket.emit('controlMessage', {
-        type: 'connectionOK',
-        content: ''
-      });
-      testStarter = false;
-    }
-    else {
-      //Responder al humano con el mismo mensaje
-      socket.emit('doblotMessage', {
-        type: 'connectionTest',
-        content: ''
-      });
-    }
-  }
-  else {
-    console.log(data.type + ': ' + data.content);
-  }
+
+
+socket.on('CONSTANTS', function ( data ) {
+	CONSTANTS = data.content;
+	console.log('Constants received');
+
+	/*
+	sendMessage(socket, CONSTANTS.CONTROL_MESSAGE, CONSTANTS.DOBLOT_INFO, {
+		name: options.name,
+		propietary: options.propietary
+	});
+	*/
+
+	var httpOptions = {
+    url: 'http://192.168.0.70:2000/signin',
+    method: 'POST',
+    headers: headers,
+    form: {'username': options.name, 'password': 'password', 'socketId': socket.id }
+};
+
+	request(httpOptions, function (error, response, body) {
+	    if (!error && response.statusCode == 200) {
+	        // Print out the response body
+	        console.log(body)
+	    }
+	})
+
+	socket.on(CONSTANTS.HUMAN_MESSAGE, function(data) {
+		switch ( data.type ) {
+			case ( CONSTANTS.CONNECTION_TEST_REQUEST ): {
+				if (testStarter) {
+					//Responder al servidor que el test es correcto
+					sendMessage( socket , CONSTANTS.CONTROL_MESSAGE, CONSTANTS.CONNECTION_TEST_OK, undefined);
+					testStarter = false;
+				}
+				else {
+					//Responder al doblot con el mismo mensaje
+					sendMessage ( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.CONNECTION_TEST_REQUEST , undefined);
+				}
+
+				break;
+			}
+			case ( CONSTANTS.VIDEO_STREAM_REQUEST ): {
+				webcam_server.startBroadcast();
+
+				break;
+			}
+
+			case ( CONSTANTS.TEXT ): {
+				doblotMessagesDiv.innerHTML = doblotMessagesDiv.innerHTML + '</br>' + data;
+
+				break;
+			}
+		}
+	});
+
+	socket.on(CONSTANTS.CONTROL_MESSAGE, function(data) {
+		switch (data.type) {
+			case ( CONSTANTS.INFO_REQUEST): {
+				sendMessage(socket, CONSTANTS.CONTROL_MESSAGE, CONSTANTS.DOBLOT_INFO, {
+					name: options.name,
+					propietary: options.propietary
+				});
+
+				break;
+			}
+			case ( CONSTANTS.ALERT): {
+				console.log(data.content);
+
+				break;
+			}
+			case ( CONSTANTS.CONNECTION_TEST_REQUEST ): {
+				//Responder al doblot con el mismo mensaje
+				sendMessage ( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.CONNECTION_TEST_REQUEST , undefined);
+				testStarter = true;
+
+				break;
+			}
+			case(CONSTANTS.CONNECTION_ESTABLISHED): {
+				
+
+				break;
+			}
+			case(CONSTANTS.CONNECTION_RELEASE): {
+				webcam_server.stopBroadcast();
+
+				break;
+			}
+		}
+	});
 });
 
-socket.on('controlMessage', function(data) {
-  if (data.type == 'connectionTest') {
-    testStarter = true;
-    socket.emit('doblotMessage', {
-      type: 'connectionTest',
-      content: ''
-    });
-  }
-  else if (data.type == 'connectionEstablished') {
-    //comenzar a enviar datos o poner listener para teclas o algo asi.
-    timer = setInterval( function() {
-        socket.emit('doblotMessage', {
-          type: 'message',
-          content: options.name
-        });
-      },1000);
-  }
-  else {
-    console.log('Server message: ' + data.type + ' | ' + data.content);
-  }
-});
 
-//Notificacion desde el servidor de que el humano se ha desconectado
-socket.on('humanDisconnected', function(data) {
-  //Parar envío de datos
-  clearInterval(timer);
-});
 
-const LiveCam = require('livecam');
+const LiveCam = require('./livecam_mod');
+
+
 const webcam_server = new LiveCam
 ({
-    // address and port of the webcam UI
-    'ui_addr' : '127.0.0.1',
-    'ui_port' : 11000,
- 
-    // address and port of the webcam Socket.IO server
-    // this server broadcasts GStreamer's video frames
-    // for consumption in browser side.
-    'broadcast_addr' : '127.0.0.1',
-    'broadcast_port' : 12000,
  
     // address and port of GStreamer's tcp sink
     'gst_tcp_addr' : '127.0.0.1',
@@ -114,12 +145,16 @@ const webcam_server = new LiveCam
     'start' : function() {
         console.log('WebCam server started!');
     },
+
+    'imageEmitCallback' : function(data) {
+      sendMessage(socket, CONSTANTS.DOBLOT_MESSAGE, CONSTANTS.IMAGE, data);
+    },
     
     // webcam object holds configuration of webcam frames
     'webcam' : {
         
         // should frames be converted to grayscale (default : false)
-        'grayscale' : true,
+        //'grayscale' : true,
         
         // should width of the frame be resized (default : 0)
         // provide 0 to match webcam input
@@ -138,6 +173,10 @@ const webcam_server = new LiveCam
         'framerate' : 25
     }
 });
+
+
+
+
 
 
 
