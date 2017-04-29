@@ -1,9 +1,11 @@
 const express = require('express');
 const passport = require('passport');
 const bodyParser = require('body-parser');
+const path = require('path');
 
 module.exports = function() {
 	const app = express();
+	const _dirname = '/home/user/Doblot/Servidor';
 
 	app.use(passport.initialize());
 	//app.use(passport.session());
@@ -16,7 +18,7 @@ module.exports = function() {
 	
 	require('../app/routes/human.routes')(app);
 
-	app.use(express.static('./public'));
+	app.use(express.static(path.join(_dirname, 'public')));
 
 	return app;
 }
