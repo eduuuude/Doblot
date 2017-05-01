@@ -1,28 +1,23 @@
-/*
-Código de un Doblot
-*/
+const doblotDataPath = '/home/mean';
 
-//Libreria de parseo de argumentos de linea de comandos
-const commandLineArgs = require('command-line-args');
+const path = require('path');
+const doblotData = require(path.join(doblotDataPath, 'doblotData.json'));
+
+//const commandLineArgs = require('command-line-args');
 const request = require('request');
-const socket = require('socket.io-client')('http://192.168.0.70:2000/');
 
-var sendMessage = function (socket, messageType, messageContentType, messageContent) {
-	socket.emit(messageType, {
-		type: messageContentType,
-		content: messageContent
-	});
-}
+const socket = require('socket.io-client')(doblotData.server);
 
+/*
 var optionDefinitions = [
   { name: 'propietary', alias: 'p', type: String },
   { name: 'name', alias: 'n', type: String}
 ];
 
 var options = commandLineArgs(optionDefinitions);
+*/
 
-
-console.log('Starting doblot. Name: ' + options.name + ' Propietary: ' + options.propietary);
+console.log('Starting doblot. Name: ' + doblotData.username + ' Propietary: ' + doblotData.propietary);
 
 
 //Conexión con el servidor
@@ -31,13 +26,12 @@ var testStarter = false;
 
 var CONSTANTS;
 
-
-var headers = {
-    'User-Agent':       'Super Agent/0.0.1',
-    'Content-Type':     'application/json'
+var sendMessage = function (socket, messageType, messageContentType, messageContent) {
+	socket.emit(messageType, {
+		type: messageContentType,
+		content: messageContent
+	});
 }
-
-
 
 socket.on('CONSTANTS', function ( data ) {
 	CONSTANTS = data.content;
@@ -53,8 +47,8 @@ socket.on('CONSTANTS', function ( data ) {
 	var httpOptions = {
     url: 'http://192.168.0.70:2000/signin',
     method: 'POST',
-    headers: headers,
-    form: {'username': options.name, 'password': 'password', 'socketId': socket.id }
+    headers: { 'User-Agent' : 'Super Agent/0.0.1' , 'Content-Type' : 'application/json' },
+    form: {'username': doblotData.username, 'password': doblotData.password, 'socketId': socket.id }
 };
 
 	request(httpOptions, function (error, response, body) {
@@ -97,8 +91,8 @@ socket.on('CONSTANTS', function ( data ) {
 		switch (data.type) {
 			case ( CONSTANTS.INFO_REQUEST): {
 				sendMessage(socket, CONSTANTS.CONTROL_MESSAGE, CONSTANTS.DOBLOT_INFO, {
-					name: options.name,
-					propietary: options.propietary
+					name: doblotData.username,
+					propietary: doblotData.propietary
 				});
 
 				break;
@@ -154,23 +148,19 @@ const webcam_server = new LiveCam
     'webcam' : {
         
         // should frames be converted to grayscale (default : false)
-        //'grayscale' : true,
+        'grayscale' : doblotData.webcamGrayscale,
         
         // should width of the frame be resized (default : 0)
         // provide 0 to match webcam input
-        'width' : 800,
+        'width' : doblotData.webcamWidth,
  
         // should height of the frame be resized (default : 0)
         // provide 0 to match webcam input
-        'height' : 600,
-        
-        // should a fake source be used instead of an actual webcam
-        // suitable for debugging and development (default : false)
-        'fake' : false,
+        'height' : doblotData.webcamHeight,
         
         // framerate of the feed (default : 0)
         // provide 0 to match webcam input
-        'framerate' : 25
+        'framerate' : doblotData.webcamFramerate
     }
 });
 
