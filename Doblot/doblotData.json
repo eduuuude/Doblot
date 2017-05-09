@@ -1,5 +1,5 @@
 {
-	"server":"http://192.168.2.1:3000",
+	"server":"http://192.168.2.1:2000",
 	"username":"doblot",
 	"password":"password",
 	"propietary":"human",
