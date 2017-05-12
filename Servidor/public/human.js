@@ -136,6 +136,12 @@ socket.on('CONSTANTS', function(data) {
 	    });
 	    return false;
 	}
+
+	document.addEventListener('keydown', function(event) {
+  		if(event.key == "ArrowUp" || event.key == "ArrowDown" || event.key == "ArrowLeft" || event.key == "ArrowRight"){
+  			sendMessage(socket,CONSTANTS.HUMAN_MESSAGE,CONSTANTS.MOVEMENT,event.key);
+  		}
+	});
 });
 
 

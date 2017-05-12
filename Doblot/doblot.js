@@ -84,6 +84,9 @@ socket.on('CONSTANTS', function ( data ) {
 
 				break;
 			}
+			case (CONSTANTS.MOVEMENT): {
+				console.log(data.content + ' pressed');
+			}
 		}
 	});
 
