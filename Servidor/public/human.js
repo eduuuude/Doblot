@@ -92,8 +92,11 @@ socket.on('CONSTANTS', function(data) {
 				//Cada nombre se introduce en una etiqueta <p></p>, se le asigna un listener que envia el nombre al servidor
 				//y se añade al div de la lista.
 				for (var i=0; i<data.content.length ; i++) {
-					var doblotListElement = document.createElement("p");
+					//var doblotListElement = document.createElement("p");
+					var doblotListElement = document.createElement("button");
+					doblotListElement.type = "button";
 					doblotListElement.innerHTML = data.content[i];
+					doblotListElement.className = "w3-button w3-teal";
 
 					doblotListElement.onclick = function() { sendMessage(socket, CONSTANTS.CONTROL_MESSAGE, CONSTANTS.DOBLOT_SELECTED, doblotListElement.innerHTML) }				
 
