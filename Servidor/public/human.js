@@ -58,6 +58,10 @@ socket.on('CONSTANTS', function(data) {
 
 			case ( CONSTANTS.TEXT ): {
 				messagesDiv.innerHTML = messagesDiv.innerHTML + '</br>' + data.content;
+				break;
+			}
+
+			case ( CONSTANTS.MOVEMENT_COMPLETED ): {
 				movementDone = true;
 				break;
 			}

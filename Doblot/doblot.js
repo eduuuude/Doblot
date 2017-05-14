@@ -102,27 +102,6 @@ socket.on('CONSTANTS', function ( data ) {
 			case (CONSTANTS.MOVEMENT): {
 				switch(data.content){
 					case ("ArrowUp"):
-<<<<<<< HEAD
-                        console.log(data.content + ' pressed');
-						//motor.servoWrite(1500);
-						sendMessage(socket,CONSTANTS.DOBLOT_MESSAGE,CONSTANTS.TEXT, "El doblot se ha movido hacia adelante");
-					break;
-					case ("ArrowDown"):
-                        console.log(data.content + ' pressed');
-						//motor.servoWrite(1000);
-						sendMessage(socket,CONSTANTS.DOBLOT_MESSAGE,CONSTANTS.TEXT, "El doblot se ha movido hacia atras");
-					break;
-					case ("ArrowLeft"):
-                        console.log(data.content + ' pressed');
-						//motor.servoWrite(2000);
-						sendMessage(socket,CONSTANTS.DOBLOT_MESSAGE,CONSTANTS.TEXT, "El doblot se ha movido hacia la izquierda");
-					break;
-					case ("ArrowRight"):
-                		console.log(data.content + ' pressed');
-						//motor.servoWrite(1700);
-						sendMessage(socket,CONSTANTS.DOBLOT_MESSAGE,CONSTANTS.TEXT, "El doblot se ha movido hacia la derecha");
-=======
-               			console.log(data.content + ' pressed');
 						move(0,-40,0,-20);
 						setTimeout(function() {
 							move(30,-40,30,-20);
@@ -139,10 +118,9 @@ socket.on('CONSTANTS', function ( data ) {
 								}, 100);
 							}, 100);
 						}, 100);
-						sendMessage( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.CONNECTION_TEST_REQUEST , undefined);
+						sendMessage( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.MOVEMENT_COMPLETED , undefined);
 					break;
 					case ("ArrowDown"):
-               			console.log(data.content + ' pressed');
 											move(-30,0,-30,0);
 						setTimeout(function() {
 										move(-30,20,-30,40);
@@ -159,10 +137,9 @@ socket.on('CONSTANTS', function ( data ) {
 								}, 100);
 							}, 100);
 						}, 100);
-						sendMessage( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.CONNECTION_TEST_REQUEST , undefined);
+						sendMessage( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.MOVEMENT_COMPLETED , undefined);
 					break;
 					case ("ArrowLeft"):
-               			console.log(data.content + ' pressed');
 						move(-40,0,-20,0);
 						setTimeout(function() {
 							move(-40,30,-20,30);
@@ -177,10 +154,9 @@ socket.on('CONSTANTS', function ( data ) {
 								}, 100);
 							}, 100);
 						}, 100);
-						sendMessage( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.CONNECTION_TEST_REQUEST , undefined);
+						sendMessage( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.MOVEMENT_COMPLETED , undefined);
 					break;
 					case ("ArrowRight"):
-		            	console.log(data.content + ' pressed');
 										move(0,0,0,0);
 						setTimeout(function() {
 									move(30,0,30,0);
@@ -195,7 +171,7 @@ socket.on('CONSTANTS', function ( data ) {
 								}, 100);
 							}, 100);
 						}, 100);
-						sendMessage( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.CONNECTION_TEST_REQUEST , undefined);
+						sendMessage( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.MOVEMENT_COMPLETED , undefined);
 					break;                       
 				}
 			}
