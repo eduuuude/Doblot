@@ -113,12 +113,13 @@ socket.on('CONSTANTS', function ( data ) {
 										move(-30,20,-30,40);
 										setTimeout(function() {
 											move(-30,0,-30,0);
+											sendMessage( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.MOVEMENT_COMPLETED , undefined);
 										}, 100);
 									}, 100);
 								}, 100);
 							}, 100);
 						}, 100);
-						sendMessage( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.MOVEMENT_COMPLETED , undefined);
+						
 					break;
 					case ("ArrowDown"):
 											move(-30,0,-30,0);
@@ -132,12 +133,12 @@ socket.on('CONSTANTS', function ( data ) {
 							move(30,-40,30,-20);
 										setTimeout(function() {
 						move(0,-40,0,-20);
+						sendMessage( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.MOVEMENT_COMPLETED , undefined);
 										}, 100);
 									}, 100);
 								}, 100);
 							}, 100);
 						}, 100);
-						sendMessage( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.MOVEMENT_COMPLETED , undefined);
 					break;
 					case ("ArrowLeft"):
 						move(-40,0,-20,0);
@@ -149,12 +150,12 @@ socket.on('CONSTANTS', function ( data ) {
 									move(30,0,30,0);
 									setTimeout(function() {
 										move(0,0,0,0);
+						sendMessage( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.MOVEMENT_COMPLETED , undefined);
 										
 									}, 100);
 								}, 100);
 							}, 100);
 						}, 100);
-						sendMessage( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.MOVEMENT_COMPLETED , undefined);
 					break;
 					case ("ArrowRight"):
 										move(0,0,0,0);
@@ -166,12 +167,12 @@ socket.on('CONSTANTS', function ( data ) {
 							move(-40,30,-20,30);
 									setTimeout(function() {
 						move(-40,0,-20,0);
+						sendMessage( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.MOVEMENT_COMPLETED , undefined);
 										
 									}, 100);
 								}, 100);
 							}, 100);
 						}, 100);
-						sendMessage( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.MOVEMENT_COMPLETED , undefined);
 					break;                       
 				}
 			}
