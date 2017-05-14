@@ -5,7 +5,7 @@ const path = require('path');
 
 module.exports = function() {
 	const app = express();
-	const _dirname = '/home/mean/Github/Doblot/Servidor';
+	const _dirname = '/home/pi/Github/Doblot/Servidor';
 
 	app.use(passport.initialize());
 	//app.use(passport.session());
