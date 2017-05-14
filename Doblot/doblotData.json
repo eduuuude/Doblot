@@ -6,5 +6,7 @@
 	"webcamGrayscale":"false",
 	"webcamWidth":"400",
 	"webcamHeight":"300",
-	"webcamFramerate":"15"
+	"webcamFramerate":"15",
+	"nfcMaintenanceTagUID":"36:d2:69:41",
+	"nfcDeactivateTagUID":"b0:c7:37:52"
 }

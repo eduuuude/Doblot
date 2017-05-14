@@ -1,21 +1,27 @@
-const doblotDataPath = '/home/mean';
+const doblotDataPath = '/home/pi/Doblot/Doblot';
 
 const path = require('path');
 const doblotData = require(path.join(doblotDataPath, 'doblotData.json'));
 
-//const commandLineArgs = require('command-line-args');
 const request = require('request');
 
 const socket = require('socket.io-client')(doblotData.server);
 
-/*
-var optionDefinitions = [
-  { name: 'propietary', alias: 'p', type: String },
-  { name: 'name', alias: 'n', type: String}
-];
+var pn532 = require('pn532');
+var SerialPort = require('serialport');
 
-var options = commandLineArgs(optionDefinitions);
-*/
+var serialPort = new SerialPort('/dev/ttyAMA0', { baudrate: 115200 });
+var rfid = new pn532.PN532(serialPort);
+
+rfid.on('ready', function() {
+    console.log('Listening for a tag scan...');
+    rfid.on('tag', function(tag) {
+    	if (tag.uid == doblotData.nfcMaintenanceTagUID)
+        	console.log(Date.now() + "Maintenance Tag: Opening.");
+        if (tag.uid == doblotData.nfcMaintenanceTagUID)
+        	console.log(Date.now() + "Deactivate Tag: Exiting.");
+    });
+});
 
 console.log('Starting doblot. Name: ' + doblotData.username + ' Propietary: ' + doblotData.propietary);
 
@@ -37,19 +43,12 @@ socket.on('CONSTANTS', function ( data ) {
 	CONSTANTS = data.content;
 	console.log('Constants received');
 
-	/*
-	sendMessage(socket, CONSTANTS.CONTROL_MESSAGE, CONSTANTS.DOBLOT_INFO, {
-		name: options.name,
-		propietary: options.propietary
-	});
-	*/
-
 	var httpOptions = {
-    url: doblotData.server + '/signin',
-    method: 'POST',
-    headers: { 'User-Agent' : 'Super Agent/0.0.1' , 'Content-Type' : 'application/json' },
-    form: {'username': doblotData.username, 'password': doblotData.password, 'socketId': socket.id }
-};
+	    url: 'http://192.168.0.70:2000/signin',
+	    method: 'POST',
+	    headers: { 'User-Agent' : 'Super Agent/0.0.1' , 'Content-Type' : 'application/json' },
+	    form: {'username': doblotData.username, 'password': doblotData.password, 'socketId': socket.id }
+	};
 
 	request(httpOptions, function (error, response, body) {
 	    if (!error && response.statusCode == 200) {
@@ -83,9 +82,6 @@ socket.on('CONSTANTS', function ( data ) {
 				doblotMessagesDiv.innerHTML = doblotMessagesDiv.innerHTML + '</br>' + data;
 
 				break;
-			}
-			case (CONSTANTS.MOVEMENT): {
-				console.log(data.content + ' pressed');
 			}
 		}
 	});
