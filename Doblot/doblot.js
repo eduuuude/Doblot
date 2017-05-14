@@ -1,4 +1,4 @@
-const doblotDataPath = '/home/mean';
+const doblotDataPath = '/home/pi';
 
 const path = require('path');
 const doblotData = require(path.join(doblotDataPath, 'doblotData.json'));
@@ -7,6 +7,9 @@ const doblotData = require(path.join(doblotDataPath, 'doblotData.json'));
 const request = require('request');
 
 const socket = require('socket.io-client')(doblotData.server);
+
+var Gpio = require('pigpio').Gpio,
+	motor = new Gpio(17,{mode: Gpio.OUTPUT});
 
 /*
 var optionDefinitions = [
@@ -74,7 +77,7 @@ socket.on('CONSTANTS', function ( data ) {
 				break;
 			}
 			case ( CONSTANTS.VIDEO_STREAM_REQUEST ): {
-				webcam_server.startBroadcast();
+				//webcam_server.startBroadcast();
 
 				break;
 			}
@@ -85,7 +88,24 @@ socket.on('CONSTANTS', function ( data ) {
 				break;
 			}
 			case (CONSTANTS.MOVEMENT): {
-				console.log(data.content + ' pressed');
+				switch(data.content){
+					case ("ArrowUp"):
+                               			console.log(data.content + ' pressed');
+						motor.servoWrite(1500);
+					break;
+					case ("ArrowDown"):
+                               			console.log(data.content + ' pressed');
+						motor.servoWrite(1000);
+					break;
+					case ("ArrowLeft"):
+                               			console.log(data.content + ' pressed');
+						motor.servoWrite(2000);
+					break;
+					case ("ArrowRight"):
+                		               console.log(data.content + ' pressed');
+						motor.servoWrite(1700);
+					break;                       
+				}
 			}
 		}
 	});
@@ -128,7 +148,7 @@ socket.on('CONSTANTS', function ( data ) {
 
 
 
-const LiveCam = require('./livecam_mod');
+/*const LiveCam = require('./livecam_mod');
 
 
 const webcam_server = new LiveCam
@@ -165,8 +185,8 @@ const webcam_server = new LiveCam
         // provide 0 to match webcam input
         'framerate' : doblotData.webcamFramerate
     }
-});
 
+});*/
 
 
 
