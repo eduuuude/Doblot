@@ -60,7 +60,7 @@ socket.on('CONSTANTS', function ( data ) {
 	console.log('Constants received');
 
 	var httpOptions = {
-	    url: 'http://192.168.0.70:2000/signin',
+	    url: doblotData.server + '/signin',
 	    method: 'POST',
 	    headers: { 'User-Agent' : 'Super Agent/0.0.1' , 'Content-Type' : 'application/json' },
 	    form: {'username': doblotData.username, 'password': doblotData.password, 'socketId': socket.id }
