@@ -49,10 +49,10 @@ var sendMessage = function (socket, messageType, messageContentType, messageCont
 }
 
 var move = function(rhpos, rapos, lhpos, lapos) {
-	rh.servoWrite(1000+Math.floor(rhpos*5.56));
-	ra.servoWrite(1000+Math.floor(rapos*5.56));
-	lh.servoWrite(1000+Math.floor(lhpos*5.56));
-	la.servoWrite(1000+Math.floor(lapos*5.56));
+	rh.servoWrite(1500+Math.floor(rhpos*5.56));
+	ra.servoWrite(1500+Math.floor(rapos*5.56));
+	lh.servoWrite(1500+Math.floor(lhpos*5.56));
+	la.servoWrite(1500+Math.floor(lapos*5.56));
 }
 
 socket.on('CONSTANTS', function ( data ) {
@@ -134,25 +134,68 @@ socket.on('CONSTANTS', function ( data ) {
 										move(-30,20,-30,40);
 										setTimeout(function() {
 											move(-30,0,-30,0);
-
+										}, 100);
+									}, 100);
+								}, 100);
+							}, 100);
 						}, 100);
-						}, 100);
-						}, 100);
-						}, 100);
-						}, 100);
+						sendMessage( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.CONNECTION_TEST_REQUEST , undefined);
 					break;
 					case ("ArrowDown"):
                			console.log(data.content + ' pressed');
-						motor.servoWrite(1000);
+											move(-30,0,-30,0);
+						setTimeout(function() {
+										move(-30,20,-30,40);
+							setTimeout(function() {
+									move(0,20,0,40);
+								setTimeout(function() {
+								move(30,-40,30,-20);
+									setTimeout(function() {
+							move(30,-40,30,-20);
+										setTimeout(function() {
+						move(0,-40,0,-20);
+										}, 100);
+									}, 100);
+								}, 100);
+							}, 100);
+						}, 100);
+						sendMessage( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.CONNECTION_TEST_REQUEST , undefined);
 					break;
 					case ("ArrowLeft"):
                			console.log(data.content + ' pressed');
-						motor.servoWrite(2000);
+						move(-40,0,-20,0);
+						setTimeout(function() {
+							move(-40,30,-20,30);
+							setTimeout(function() {
+								move(0,30,0,30);
+								setTimeout(function() {
+									move(30,0,30,0);
+									setTimeout(function() {
+										move(0,0,0,0);
+										
+									}, 100);
+								}, 100);
+							}, 100);
+						}, 100);
+						sendMessage( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.CONNECTION_TEST_REQUEST , undefined);
 					break;
 					case ("ArrowRight"):
 		            	console.log(data.content + ' pressed');
-						motor.servoWrite(1700);
->>>>>>> master_Raspi
+										move(0,0,0,0);
+						setTimeout(function() {
+									move(30,0,30,0);
+							setTimeout(function() {
+								move(0,30,0,30);
+								setTimeout(function() {
+							move(-40,30,-20,30);
+									setTimeout(function() {
+						move(-40,0,-20,0);
+										
+									}, 100);
+								}, 100);
+							}, 100);
+						}, 100);
+						sendMessage( socket , CONSTANTS.DOBLOT_MESSAGE , CONSTANTS.CONNECTION_TEST_REQUEST , undefined);
 					break;                       
 				}
 			}
@@ -236,24 +279,6 @@ const webcam_server = new LiveCam
     }
 
 });
-
-move(0,-40,0,-20);
-						setTimeout(function() {
-							move(30,-40,30,-20);
-							setTimeout(function() {
-								move(30,-40,30,-20);
-								setTimeout(function() {
-									move(0,20,0,40);
-									setTimeout(function() {
-										move(-30,20,-30,40);
-										setTimeout(function() {
-											move(-30,0,-30,0);
-
-						}, 100);
-						}, 100);
-						}, 100);
-						}, 100);
-						}, 100);
 
 
 

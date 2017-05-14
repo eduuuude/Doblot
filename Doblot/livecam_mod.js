@@ -88,7 +88,7 @@ function GstLaunch() {
 		try {
 			var gst_launch_path = getPath();
 			Assert.ok(typeof(gst_launch_path), 'string');
-			
+			console.log(gst_launch_path);
 			var output = SpawnSync(
 					gst_launch_path,
 					[gst_launch_versionarg],
