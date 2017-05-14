@@ -2,6 +2,7 @@ var doblotListDiv = document.getElementById('doblotList');
 var doblotListPanelDiv = document.getElementById('doblotListPanel');
 
 var doblotMessagesDiv = document.getElementById('doblotMessages');
+var messagesDiv = document.getElementById('messages');
 
 var verificacionForm = document.getElementById('verificacionForm');
 
@@ -16,6 +17,7 @@ var humanMessage = document.getElementById('humanMessageBox');
 
 var video = document.getElementById('video');
 
+var movementDone = true;
 
 
 var testStarter = false;
@@ -55,8 +57,8 @@ socket.on('CONSTANTS', function(data) {
 			}
 
 			case ( CONSTANTS.TEXT ): {
-				doblotMessagesDiv.innerHTML = doblotMessagesDiv.innerHTML + '</br>' + data;
-
+				messagesDiv.innerHTML = messagesDiv.innerHTML + '</br>' + data.content;
+				movementDone = true;
 				break;
 			}
 		}
@@ -142,7 +144,10 @@ socket.on('CONSTANTS', function(data) {
 
 	document.addEventListener('keydown', function(event) {
   		if(event.key == "ArrowUp" || event.key == "ArrowDown" || event.key == "ArrowLeft" || event.key == "ArrowRight"){
-  			sendMessage(socket,CONSTANTS.HUMAN_MESSAGE,CONSTANTS.MOVEMENT,event.key);
+  			if(movementDone == true){
+  				sendMessage(socket,CONSTANTS.HUMAN_MESSAGE,CONSTANTS.MOVEMENT,event.key);
+  				movementDone = false;
+  			}
   		}
 	});
 });

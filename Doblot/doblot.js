@@ -96,20 +96,24 @@ socket.on('CONSTANTS', function ( data ) {
 			case (CONSTANTS.MOVEMENT): {
 				switch(data.content){
 					case ("ArrowUp"):
-                               			console.log(data.content + ' pressed');
-						motor.servoWrite(1500);
+                        console.log(data.content + ' pressed');
+						//motor.servoWrite(1500);
+						sendMessage(socket,CONSTANTS.DOBLOT_MESSAGE,CONSTANTS.TEXT, "El doblot se ha movido hacia adelante");
 					break;
 					case ("ArrowDown"):
-                               			console.log(data.content + ' pressed');
-						motor.servoWrite(1000);
+                        console.log(data.content + ' pressed');
+						//motor.servoWrite(1000);
+						sendMessage(socket,CONSTANTS.DOBLOT_MESSAGE,CONSTANTS.TEXT, "El doblot se ha movido hacia atras");
 					break;
 					case ("ArrowLeft"):
-                               			console.log(data.content + ' pressed');
-						motor.servoWrite(2000);
+                        console.log(data.content + ' pressed');
+						//motor.servoWrite(2000);
+						sendMessage(socket,CONSTANTS.DOBLOT_MESSAGE,CONSTANTS.TEXT, "El doblot se ha movido hacia la izquierda");
 					break;
 					case ("ArrowRight"):
-                		               console.log(data.content + ' pressed');
-						motor.servoWrite(1700);
+                		console.log(data.content + ' pressed');
+						//motor.servoWrite(1700);
+						sendMessage(socket,CONSTANTS.DOBLOT_MESSAGE,CONSTANTS.TEXT, "El doblot se ha movido hacia la derecha");
 					break;                       
 				}
 			}
