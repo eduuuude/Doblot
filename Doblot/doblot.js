@@ -9,14 +9,13 @@ const socket = require('socket.io-client')(doblotData.server);
 
 var pn532 = require('pn532');
 var SerialPort = require('serialport');
-var Gpio = require('pigpio').Gpio,
-	motor = new Gpio(17,{mode: Gpio.OUTPUT});
 
-/*
-var optionDefinitions = [
-  { name: 'propietary', alias: 'p', type: String },
-  { name: 'name', alias: 'n', type: String}
-];
+var Gpio = require('pigpio').Gpio;
+var rh = new Gpio(17,{mode: Gpio.OUTPUT});
+var ra = new Gpio(18,{mode: Gpio.OUTPUT});
+var lh = new Gpio(27,{mode: Gpio.OUTPUT});
+var la = new Gpio(22,{mode: Gpio.OUTPUT});
+
 
 var serialPort = new SerialPort('/dev/ttyAMA0', { baudrate: 115200 });
 var rfid = new pn532.PN532(serialPort);
@@ -47,6 +46,13 @@ var sendMessage = function (socket, messageType, messageContentType, messageCont
 		type: messageContentType,
 		content: messageContent
 	});
+}
+
+var move = function(rhpos, rapos, lhpos, lapos) {
+	rh.servoWrite(1000+Math.floor(rhpos*5.56));
+	ra.servoWrite(1000+Math.floor(rapos*5.56));
+	lh.servoWrite(1000+Math.floor(lhpos*5.56));
+	la.servoWrite(1000+Math.floor(lapos*5.56));
 }
 
 socket.on('CONSTANTS', function ( data ) {
@@ -83,7 +89,7 @@ socket.on('CONSTANTS', function ( data ) {
 				break;
 			}
 			case ( CONSTANTS.VIDEO_STREAM_REQUEST ): {
-				//webcam_server.startBroadcast();
+				webcam_server.startBroadcast();
 
 				break;
 			}
@@ -96,6 +102,7 @@ socket.on('CONSTANTS', function ( data ) {
 			case (CONSTANTS.MOVEMENT): {
 				switch(data.content){
 					case ("ArrowUp"):
+<<<<<<< HEAD
                         console.log(data.content + ' pressed');
 						//motor.servoWrite(1500);
 						sendMessage(socket,CONSTANTS.DOBLOT_MESSAGE,CONSTANTS.TEXT, "El doblot se ha movido hacia adelante");
@@ -114,6 +121,38 @@ socket.on('CONSTANTS', function ( data ) {
                 		console.log(data.content + ' pressed');
 						//motor.servoWrite(1700);
 						sendMessage(socket,CONSTANTS.DOBLOT_MESSAGE,CONSTANTS.TEXT, "El doblot se ha movido hacia la derecha");
+=======
+               			console.log(data.content + ' pressed');
+						move(0,-40,0,-20);
+						setTimeout(function() {
+							move(30,-40,30,-20);
+							setTimeout(function() {
+								move(30,-40,30,-20);
+								setTimeout(function() {
+									move(0,20,0,40);
+									setTimeout(function() {
+										move(-30,20,-30,40);
+										setTimeout(function() {
+											move(-30,0,-30,0);
+
+						}, 100);
+						}, 100);
+						}, 100);
+						}, 100);
+						}, 100);
+					break;
+					case ("ArrowDown"):
+               			console.log(data.content + ' pressed');
+						motor.servoWrite(1000);
+					break;
+					case ("ArrowLeft"):
+               			console.log(data.content + ' pressed');
+						motor.servoWrite(2000);
+					break;
+					case ("ArrowRight"):
+		            	console.log(data.content + ' pressed');
+						motor.servoWrite(1700);
+>>>>>>> master_Raspi
 					break;                       
 				}
 			}
@@ -158,7 +197,7 @@ socket.on('CONSTANTS', function ( data ) {
 
 
 
-/*const LiveCam = require('./livecam_mod');
+const LiveCam = require('./livecam_mod');
 
 
 const webcam_server = new LiveCam
@@ -196,7 +235,25 @@ const webcam_server = new LiveCam
         'framerate' : doblotData.webcamFramerate
     }
 
-});*/
+});
+
+move(0,-40,0,-20);
+						setTimeout(function() {
+							move(30,-40,30,-20);
+							setTimeout(function() {
+								move(30,-40,30,-20);
+								setTimeout(function() {
+									move(0,20,0,40);
+									setTimeout(function() {
+										move(-30,20,-30,40);
+										setTimeout(function() {
+											move(-30,0,-30,0);
+
+						}, 100);
+						}, 100);
+						}, 100);
+						}, 100);
+						}, 100);
 
 
 
