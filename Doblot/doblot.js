@@ -17,9 +17,11 @@ rfid.on('ready', function() {
     console.log('Listening for a tag scan...');
     rfid.on('tag', function(tag) {
     	if (tag.uid == doblotData.nfcMaintenanceTagUID)
-        	console.log(Date.now() + "Maintenance Tag: Opening.");
-        if (tag.uid == doblotData.nfcMaintenanceTagUID)
-        	console.log(Date.now() + "Deactivate Tag: Exiting.");
+        	console.log(Date.now() + " Maintenance Tag: Opening.");
+        if (tag.uid == doblotData.nfcMaintenanceTagUID) {
+        	console.log(Date.now() + " Deactivate Tag: Exiting.");
+        	process.exit();
+        }
     });
 });
 
